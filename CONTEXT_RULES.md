@@ -13,7 +13,8 @@ Regras de governança entregues ao assistente de IA em toda interação de gera�
 - O contrato de entrada e saída é o definido em `specs/task_analyzer_spec.md`.
 
 ## 2. Proibições
-- Não usar bibliotecas externas além do `pytest` (somente para testes).
+- Não usar bibliotecas externas no código de produção (`src/`). Somente a biblioteca padrão do Python.
+- Ferramentas de desenvolvimento autorizadas, apenas em `requirements.txt`: `pytest` (testes) e `bandit` (análise estática de segurança).
 - Não persistir dados (arquivos, banco de dados, rede).
 - Não alterar `tests/test_harness.py` nem a estrutura de pastas.
 - Não inventar campos, funções ou regras que não estejam na especificação.
@@ -23,3 +24,11 @@ Regras de governança entregues ao assistente de IA em toda interação de gera�
 - Se algo não estiver especificado, a IA deve perguntar, não presumir.
 - Todo código gerado é revisado criticamente e só entra no repositório após passar no pytest.
 - A decisão e a responsabilidade finais são sempre humanas.
+
+## 4. Infraestrutura e segurança (Fase 3)
+- O pipeline de CI roda no GitHub Actions, em `ubuntu-latest`, com Python 3.11, a cada push ou Pull Request nas branches `main` e `develop`.
+- O pipeline executa `pytest tests/test_harness.py -v` e `bandit -r src -ll`; falha em qualquer um bloqueia a integração.
+- O ambiente de execução em contêiner usa a imagem `python:3.11-slim` e deve rodar toda a suíte de testes com um único comando.
+- Proibido incluir senhas, tokens, chaves ou dados pessoais no repositório.
+- Proibido usar `eval`, `exec`, `pickle`, `subprocess` ou execução dinâmica de código.
+- Toda sugestão da IA que adicione dependência, arquivo ou etapa de pipeline não prevista nestas regras é rejeitada até revisão humana.
